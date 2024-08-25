@@ -6,7 +6,6 @@ import connectDB from "./utils/db.js";
 dotenv.config({});
 
 const App = express();
-const PORT = 8000;
 
 App.get("/", (req, res) => {
   return res.status(200).json({
@@ -25,8 +24,8 @@ App.get("/", (req, res) => {
 
 // App.use(cors(corsOption));
 
-App.listen(PORT, () => {
+App.listen(process.env.PORT, () => {
   connectDB();
 
-  console.log(`Server is listening on port ${PORT}`);
+  console.log(`Server is listening on port ${process.env.PORT}`);
 });
