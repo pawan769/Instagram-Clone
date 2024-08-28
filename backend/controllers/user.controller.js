@@ -5,6 +5,7 @@ import getDataUri from "../utils/dataUri.js";
 import cloudinary from "../utils/cloudinary.js";
 
 export const register = async (req, res) => {
+  console.log("hit");
   try {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
@@ -28,12 +29,18 @@ export const register = async (req, res) => {
       email,
       password: hashedPassword,
     });
+    return res.status(200).json({
+      message: "user registered successfully",
+      success: true,
+    });
   } catch (error) {
     console.log(error);
   }
 };
 
 export const login = async (req, res) => {
+  console.log("hit");
+
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -42,7 +49,7 @@ export const login = async (req, res) => {
         success: false,
       });
     }
-    const user = await User.findOne({ email });
+    let user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({
         message: "Incorrect username or password!",
@@ -61,7 +68,7 @@ export const login = async (req, res) => {
       username: user.username,
       email: user.email,
       profilePicture: user.profilePicture,
-      bio: user.bio,
+      bio: user.Bio,
       followers: user.followers,
       following: user.following,
       posts: user.posts,
@@ -87,6 +94,8 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (_, res) => {
+  console.log("hit_logout");
+
   try {
     return res.cookie("token", "", { maxAge: 0 }).json({
       message: "logged out successfully",
@@ -100,10 +109,17 @@ export const logout = async (_, res) => {
 export const getProfile = async (req, res) => {
   try {
     const userId = req.params.id;
-    let user = await User.findOne(userId);
+
+    let user = await User.findById(userId).select("-password");
+    if (user) {
+      return res.status(200).json({
+        user,
+        success: true,
+      });
+    }
     return res.status(200).json({
-      user,
-      success: true,
+      message: "Cannot find the user!",
+      success: false,
     });
   } catch (error) {
     console.log(error);
@@ -113,6 +129,7 @@ export const getProfile = async (req, res) => {
 export const editProfile = async (req, res) => {
   try {
     const userId = req.id;
+    console.log(userId);
     const { bio, gender } = req.body;
     const profilePicture = req.file;
     let cloudResponse;
@@ -121,15 +138,15 @@ export const editProfile = async (req, res) => {
       cloudResponse = await cloudinary.uploader.upload(profileUri);
     }
 
-    const user = await User.findById(userId);
-    if (user) {
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
       return res.status(404).json({
         message: "User not found!",
         success: false,
       });
     }
 
-    if (bio) user.bio = bio;
+    if (bio) user.Bio = bio;
     if (gender) user.gender = gender;
     if (profilePicture) user.profilePicture = cloudResponse.secure_url;
 
@@ -138,6 +155,7 @@ export const editProfile = async (req, res) => {
     return res.status(200).json({
       message: "Profile Updated Successfully!",
       success: true,
+      user,
     });
   } catch (error) {
     console.log(error);
@@ -154,17 +172,18 @@ export const getSuggestedUsers = async (req, res) => {
         message: "Suggestion not found!",
         success: false,
       });
-      return res.status(200).json({
-        success: true,
-        suggestedUsers,
-      });
     }
+    return res.status(200).json({
+      success: true,
+      suggestedUsers,
+    });
   } catch (error) {
     console.log(error);
   }
 };
 
 export const followOrUnfollow = async (req, res) => {
+  console.log("followorunfollow");
   try {
     const requestedBy = req.id;
     const requestedTo = req.params.id;
