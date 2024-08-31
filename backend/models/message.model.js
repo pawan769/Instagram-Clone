@@ -4,4 +4,4 @@ const messageSchema = new mongoose.Schema({
   receiverId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   message: { type: String, required: true },
 });
-export default Message = mongoose.model("Message", messageSchema);
+export const Message = mongoose.model("Message", messageSchema);

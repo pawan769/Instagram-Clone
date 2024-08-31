@@ -6,7 +6,7 @@ import connectDB from "./utils/db.js";
 dotenv.config({});
 import userRoute from "./routes/user.route.js";
 import postRoute from "./routes/post.route.js";
-
+import messageRoute from "./routes/message.route.js";
 const App = express();
 
 App.get("/", (req, res) => {
@@ -29,6 +29,7 @@ App.use(cookieParser());
 //routes
 App.use("/api/v1/user", userRoute);
 App.use("/api/v1/post", postRoute);
+App.use("/api/v1/message", messageRoute);
 
 App.listen(process.env.PORT, () => {
   connectDB();
