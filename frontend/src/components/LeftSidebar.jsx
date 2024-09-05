@@ -2,7 +2,7 @@ import {
   Heart,
   Home,
   LogOut,
-  MessageCircle,
+  MessageCircleMore,
   PlusSquare,
   Search,
   TrendingUp,
@@ -16,7 +16,7 @@ const sidebarItems = [
   { text: "Home", icon: <Home /> },
   { text: "Search", icon: <Search /> },
   { text: "Explore", icon: <TrendingUp /> },
-  { text: "Messages", icon: <MessageCircle /> },
+  { text: "Messages", icon: <MessageCircleMore /> },
   { text: "Notification", icon: <Heart /> },
   { text: "Create", icon: <PlusSquare /> },
   {
