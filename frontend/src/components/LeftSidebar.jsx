@@ -11,31 +11,43 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
-const sidebarItems = [
-  { text: "Home", icon: <Home /> },
-  { text: "Search", icon: <Search /> },
-  { text: "Explore", icon: <TrendingUp /> },
-  { text: "Messages", icon: <MessageCircleMore /> },
-  { text: "Notification", icon: <Heart /> },
-  { text: "Create", icon: <PlusSquare /> },
-  {
-    text: "Profile",
-    icon: (
-      <Avatar className="w-6 h-6">
-        <AvatarImage src="https://github.com/shadcn.png" />
-        <AvatarFallback>CN</AvatarFallback>
-      </Avatar>
-    ),
-  },
-  { text: "Logout", icon: <LogOut /> },
-];
+import { useDispatch, useSelector } from "react-redux";
+import { setAuthUser } from "@/redux/authSlice";
+import { useState } from "react";
+import CreatePost from "./CreatePost";
 
 const LeftSidebar = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useSelector((store) => store.auth);
+
+  const [open, setOpen] = useState(false);
+
+  const sidebarItems = [
+    { text: "Home", icon: <Home /> },
+    { text: "Search", icon: <Search /> },
+    { text: "Explore", icon: <TrendingUp /> },
+    { text: "Messages", icon: <MessageCircleMore /> },
+    { text: "Notification", icon: <Heart /> },
+    { text: "Create", icon: <PlusSquare /> },
+    {
+      text: "Profile",
+      icon: (
+        <Avatar className="w-6 h-6">
+          <AvatarImage src={user?.profilePicture} />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
+      ),
+    },
+    { text: "Logout", icon: <LogOut /> },
+  ];
   const itemsClickHandler = (text) => {
     if (text === "Logout") {
       logoutHandler();
+    }
+    if (text == "Create") {
+      setOpen(true);
+      createPostHandler();
     }
   };
   const logoutHandler = async () => {
@@ -45,9 +57,18 @@ const LeftSidebar = () => {
       });
 
       if (res.data.success) {
+        dispatch(setAuthUser(null));
         navigate("/login");
         toast.success(res.data.message);
       }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const createPostHandler = async () => {
+    try {
+      console.log("createPostHandler");
     } catch (error) {
       toast.error(error.response.data.message);
     }
@@ -68,6 +89,7 @@ const LeftSidebar = () => {
             </div>
           );
         })}
+        {open && <CreatePost open={open} setOpen={setOpen} />}
       </div>
     </div>
   );

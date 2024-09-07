@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import {
   Bookmark,
   Heart,
@@ -10,9 +11,11 @@ import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useState } from "react";
+import CommentDialog from "./CommentDialog";
 
-const Post = () => {
+const Post = ({ post }) => {
   const [comment, setComment] = useState("");
+  const [commentDialog, setCommentDialog] = useState(false);
 
   const changeHandler = (e) => {
     const text = e.target.value;
@@ -22,15 +25,16 @@ const Post = () => {
       setComment("");
     }
   };
+
   return (
     <div className="mt-6 border-b border-gray-500">
-      <div className="flex items-center gap-2 justify-between ">
+      <div className="flex items-center gap-2 justify-between mb-2 ">
         <div className="flex items-center gap-3">
           <Avatar>
-            <AvatarImage src="" alt="avatar_image" />
+            <AvatarImage src={post.author.profilePicture} alt="avatar_image" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <h1>username</h1>
+          <h1>{post.author.username}</h1>
         </div>
 
         <Dialog>
@@ -59,31 +63,39 @@ const Post = () => {
         </Dialog>
       </div>
       <img
-        src="https://images.unsplash.com/photo-1724776912349-918781add338?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        src={post.image}
         alt="post_img"
-        className="aspect-square size-fit max-w-lg rounded-sm"
+        className=" size-fit max-w-lg rounded-sm"
       />
       <div className="mt-3 flex justify-between ">
         <div className="flex items-center gap-5">
           <Heart className="h-6 w-6 cursor-pointer" />
-          <MessageCircle className="h-6 w-6 cursor-pointer" />
+          <MessageCircle
+            className="h-6 w-6 cursor-pointer"
+            onClick={() => setCommentDialog(true)}
+          />
           <Send className="h-6 w-6 cursor-pointer" />
         </div>
         <Bookmark className="h-6 w-6 cursor-pointer" />
       </div>
       <div className="mt-2 flex flex-col gap-1">
-        <p className="font-semibold">500 likes</p>
+        <p className="font-semibold">{post.likes.length} likes</p>
         <div className="font-normal max-w-lg ">
-          <span className="font-semibold ">username </span>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Eaque, qui ab
-          fugit aliquid neque nisi ad quisquam sint, repudiandae, quis impedit!
-          Vero neque molestias optio numquam fuga facilis quae quaerat!
+          <span className="font-semibold mr-2">{post.author.username}</span>
+          {post.caption}
         </div>
         <div>
-          <h4 className="text-gray-500 hover:cursor-pointer">
-            View all 24 comments
+          <h4
+            className="text-gray-500 hover:cursor-pointer"
+            onClick={() => setCommentDialog(true)}
+          >
+            {post.comments.length === 0 ? (
+              <div>No comments</div>
+            ) : (
+              <div>View all {post.comments.length} comments</div>
+            )}
           </h4>
-
+          <CommentDialog open={commentDialog} setOpen={setCommentDialog} />
           <div className="flex items-center">
             <Input
               placeholder="Add a comment..."
