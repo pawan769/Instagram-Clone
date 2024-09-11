@@ -6,9 +6,7 @@ const Posts = () => {
 
   return (
     <div>
-      {posts.map((post) => (
-        <Post key={post._id} post={post} />
-      ))}
+      {posts && posts.map((post) => <Post key={post._id} post={post} />)}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Input } from "./ui/input";
@@ -9,14 +9,17 @@ import { getImageDataUri } from "@/lib/utils";
 import { toast } from "sonner";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
+import { setPosts } from "@/redux/postSlice";
 
 const CreatePost = ({ open, setOpen }) => {
+  const dispatch = useDispatch();
   const [caption, setCaption] = useState("");
   const [file, setFile] = useState("");
   const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(false);
   const fileRef = useRef(null);
   const { user } = useSelector((store) => store.auth);
+  const { posts } = useSelector((store) => store.posts);
 
   const fileInputHandler = () => {
     fileRef.current.click();
@@ -47,7 +50,9 @@ const CreatePost = ({ open, setOpen }) => {
       );
 
       if (res.data.success) {
+        dispatch(setPosts([res.data.post, ...posts]));
         toast.success(res.data.message);
+        setOpen(false);
       }
     } catch (error) {
       toast.error(error.response.data.message);
@@ -58,7 +63,10 @@ const CreatePost = ({ open, setOpen }) => {
 
   return (
     <Dialog open={open}>
-      <DialogContent onInteractOutside={() => setOpen(false)} className="">
+      <DialogContent
+        onInteractOutside={() => setOpen(false)}
+        aria-describedby={undefined}
+      >
         <DialogTitle className="text-center text-base">
           Create a post
         </DialogTitle>
